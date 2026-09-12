@@ -41,7 +41,7 @@ These bags were added after the original Phase 1 run. They have been admitted to
 | Dynamic01 | 175.162754 | 175,337 | 1,752 | 35,032 | 5,251 | 3,504 | 52,134 | readable |
 | Dynamic02 | 150.184642 | 149,931 | 1,502 | 30,037 | 4,502 | 3,004 | 44,295 | readable |
 | Varying-illu01 | 154.092990 | 153,609 | 1,541 | 30,817 | 4,619 | 3,082 | 45,242 | readable |
-| Varying-illu02 | 146.507514 | 146,568 | 1,465 | 29,300 | 4,392 | 2,930 | 43,550 | readable; supplied external GT rejected |
+| Varying-illu02 | 146.507514 | 146,568 | 1,465 | 29,300 | 4,392 | 2,930 | 43,550 | readable; corrected external GT matches bag |
 | Sha-turn01 | 138.963257 | 138,182 | 1,390 | 27,792 | 4,166 | 2,779 | 40,452 | readable |
 | Sha-turn02 | 100.482259 | 100,946 | 1,004 | 20,096 | 3,012 | 2,009 | 30,283 | readable |
 
@@ -121,13 +121,13 @@ The reproducible checker is `scripts/audit_m3dgr_gt.py`. It validates the expect
 | Dynamic01 | 52,134 | 52,134 | all rows match within 1 ms | usable after reference-frame contract is resolved |
 | Dynamic02 | 44,295 | 44,295 | all rows match within 1 ms | usable after reference-frame contract is resolved |
 | Varying-illu01 | 45,242 | 45,242 | all rows match within 1 ms | usable after reference-frame contract is resolved |
-| Varying-illu02 | 47,560 | 43,550 | zero rows match within 1 ms | reject supplied local text |
+| Varying-illu02 | 43,550 | 43,550 | all rows match within 1 ms | usable after reference-frame contract is resolved |
 | Sha-turn01 | 40,452 | 40,452 | all rows match within 1 ms | usable after reference-frame contract is resolved |
 | Sha-turn02 | 30,283 | 30,283 | all rows match within 1 ms | usable after reference-frame contract is resolved |
 
-- 【事实】For the five matching local files, maximum row-wise differences are below 0.48 microseconds in timestamp, 0.86 micrometres in position, and 1.93 microradians in sign-invariant quaternion angle. These bounds are consistent with six-decimal text serialization.
-- 【事实】The supplied local `GT/Varying-illu02.txt` starts at `1732436008.026560`, 2705.58 s before the corresponding bag GT, and has 47,560 rather than 43,550 rows. Its SHA-256 is `202398498f1d482341e70035afbacf092c2b7eb0a6511523e636dfc137081238`, exactly equal to the local `GT/Visual_Challenge/Indoor/Dark04.txt`.
-- 【事实】The frozen official repository's [Varying-illu02 GT](https://github.com/sjtuyinjie/M3DGR/blob/e0cf7d59c9a5a3df515624034698d976abc26549/Varying-illu02.txt) has 43,550 rows. The frozen audit copy has SHA-256 `293f0ef2b9c552f14772e512a9f6634d84cb09224bb3ddc50f2c6f6c04535d0f` and matches every corresponding bag VRPN pose within the same serialization bounds. The dataset directory has not been overwritten automatically.
+- 【事实】For all six current local files, maximum row-wise differences are below 0.48 microseconds in timestamp, 0.86 micrometres in position, and 1.93 microradians in sign-invariant quaternion angle. These bounds are consistent with six-decimal text serialization.
+- 【事实】Before correction, the supplied local `GT/Varying-illu02.txt` started at `1732436008.026560`, 2705.58 s before the corresponding bag GT, and had 47,560 rather than 43,550 rows. Its SHA-256 was `202398498f1d482341e70035afbacf092c2b7eb0a6511523e636dfc137081238`, exactly equal to the local `GT/Visual_Challenge/Indoor/Dark04.txt`.
+- 【事实】On 2026-09-12, after explicit user authorization, `GT/Varying-illu02.txt` was replaced from the frozen official repository's [Varying-illu02 GT](https://github.com/sjtuyinjie/M3DGR/blob/e0cf7d59c9a5a3df515624034698d976abc26549/Varying-illu02.txt). The current local file has 43,550 rows and SHA-256 `293f0ef2b9c552f14772e512a9f6634d84cb09224bb3ddc50f2c6f6c04535d0f`; a post-replacement `SequentialReader` audit confirms that every row matches the bag VRPN pose within the stated serialization bounds.
 - 【事实】All six bag GT messages use `header.frame_id = world`, contain non-identity orientations, have finite values, and have no duplicate or decreasing header timestamps.
 - 【事实】The nominal mean Mocap rate is about 291--301 Hz, but approximately 66--67% of adjacent timestamps are less than 1 ms apart and the median interval is only 18--19 microseconds. Samples arrive in timestamp bursts separated by roughly 10 ms.
 - 【推断】Differentiating raw adjacent Mocap samples produces noise-amplified, nonphysical speed spikes; raw-row local increments are therefore unsuitable as learning labels. A documented fixed-rate resampling/interpolation protocol is required before any temporal-correction dataset is built.
